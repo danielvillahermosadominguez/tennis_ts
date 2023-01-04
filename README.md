@@ -238,7 +238,8 @@ In addition, you must include a new config file for babel (jest use babel). babe
 ``` json
 {
   "presets": [
-    "@babel/preset-env"
+    "@babel/preset-env",
+    "@babel/preset-typescript"
   ]
 }
 ```

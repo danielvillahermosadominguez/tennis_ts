@@ -1,5 +1,5 @@
 export default class Game {
-    getResultMessage() {
+    public getResultMessage():string {
          return "Love-All";
     }
 }
