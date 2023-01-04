@@ -233,7 +233,27 @@ Now upi could use these commands
 npm run build // tranpile the "src" folder
 npm run test // execute the tests
 ```
+## Configure Visual Studio Code
+We can add a configuration with Run->Add configuration->
+```
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
 
+        {
+            "type": "node-terminal",
+            "request": "launch",
+            "name": "Run Jasmine Tests",
+           "command": "npm test",
+        }
+    ]
+}
+```
+
+Now you could debug your application with Run->Start Debuging
 
 #Annex
 ## Several nodejs verions in your computer
