@@ -13,7 +13,8 @@ You can read more about Tennis scores on wikipedia which is summarized below:
 This kata is described on cyber-dojo.org
 
 # Some assumtions for this implementation
-TBD
+- We are going to apply an style mockist to solve it
+- Our unit tests are isolated of the rest of the classes by using stubs and mocks
 
 # Enviroment configuration Typescript and Visual Studio
 ## Javascript project
@@ -233,9 +234,17 @@ Now upi could use these commands
 npm run build // tranpile the "src" folder
 npm run test // execute the tests
 ```
+In addition, you must include a new config file for babel (jest use babel). babel.config.json
+``` json
+{
+  "presets": [
+    "@babel/preset-env"
+  ]
+}
+```
 ## Configure Visual Studio Code
 We can add a configuration with Run->Add configuration->
-```
+``` json
 {
     // Use IntelliSense to learn about possible attributes.
     // Hover to view descriptions of existing attributes.
@@ -254,6 +263,10 @@ We can add a configuration with Run->Add configuration->
 ```
 
 Now you could debug your application with Run->Start Debuging
+
+# Plugin for refactors
+https://github.com/cancerberoSgx/typescript-plugins-of-mine/blob/master/vscode-typescript-refactors/README.md
+You can install in Visual Studio Code.
 
 #Annex
 ## Several nodejs verions in your computer
