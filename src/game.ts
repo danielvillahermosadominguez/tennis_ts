@@ -1,4 +1,5 @@
 import { Score, ScoreName } from "./score";
+import {BoardMessage} from "./boardmessage";
 export default class Game {
     private score1: Score;
     private score2: Score;
@@ -16,24 +17,22 @@ export default class Game {
         this.score2.addPoint()
     }
 
-    public getResultMessage(): string {
+    public getResultMessage(): BoardMessage {
+        var result = BoardMessage.of();
         var distance = this.score1.distance(this.score2);
-        if (distance === 0) {
-            if (this.score1.isYourScore(ScoreName.Love)) {
-                return "Love-All"
-            } else if (this.score1.isYourScore(ScoreName.Fifteen)) {
-                return "Fifteen-All";
-            }
-            else if (this.score1.isYourScore(ScoreName.Thirty)) {
-                return "Thirty-All";
-            }
-            return "Deuce";
-        } else if (distance > 0) {
-            return "Advantage for the player - " + this.score1.getPlayerID();
+        if(distance > 0) {
+            result.advantageFor(this.score1.getPlayerID());
+            return result;
         }
 
-        return "Advantage for the player - " + this.score2.getPlayerID();
+        if(distance < 0) {
+            result.advantageFor(this.score2.getPlayerID());
+            return result;
+        }
 
+        result.all(this.score1.yourScore());
+        
+        return result;
     }
 }
 

@@ -19,7 +19,7 @@ export class Score {
         throw new Error("Method not implemented");
     }
 
-    public isYourScore(scoreName: ScoreName): boolean {
+    public yourScore(): ScoreName {
         throw new Error("Method not implemented");
     }
 

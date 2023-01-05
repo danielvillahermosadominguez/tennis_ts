@@ -1,6 +1,8 @@
 import { expect, jest, test } from '@jest/globals';
 import Game from "../src/game";
 import { Score, ScoreName } from "../src/score";
+import {BoardMessage} from "../src/boardmessage";
+
 jest.mock('../src/score');
 
 
@@ -17,15 +19,15 @@ describe("The tennis game should", () => {
 
     it("show Love-All when the match start", () => {
         scorePlayer1.distance = jest.fn(() => 0);
-        scorePlayer1.isYourScore = jest.fn((scoreName) => scoreName === ScoreName.Love);
-        expect(game.getResultMessage()).toBe("Love-All");
+        scorePlayer1.yourScore = jest.fn(() => ScoreName.Love);
+        expect(game.getResultMessage().getValue()).toBe("Love-All");
     });
 
     it("show Fiflteen-All when both players win 1 point", () => {
         scorePlayer1.addPoint = jest.fn();
         scorePlayer2.addPoint = jest.fn();
         scorePlayer1.distance = jest.fn(() => 0);
-        scorePlayer1.isYourScore = jest.fn((scoreName) => scoreName === ScoreName.Fifteen);
+        scorePlayer1.yourScore = jest.fn(() => ScoreName.Fifteen);
 
         winPoints(1, 1);
 
@@ -36,7 +38,7 @@ describe("The tennis game should", () => {
         scorePlayer1.addPoint = jest.fn();
         scorePlayer2.addPoint = jest.fn();
         scorePlayer1.distance = jest.fn(() => 0);
-        scorePlayer1.isYourScore = jest.fn((scoreName) => scoreName === ScoreName.Thirty);
+        scorePlayer1.yourScore = jest.fn(() => ScoreName.Thirty);
 
         winPoints(2, 2);
 
@@ -47,7 +49,7 @@ describe("The tennis game should", () => {
         scorePlayer1.addPoint = jest.fn();
         scorePlayer2.addPoint = jest.fn();
         scorePlayer1.distance = jest.fn(() => 0);
-        scorePlayer1.isYourScore = jest.fn((scoreName) => scoreName === ScoreName.Forty);
+        scorePlayer1.yourScore = jest.fn(() => ScoreName.Forty);
 
         winPoints(4, 4);
 
@@ -67,21 +69,36 @@ describe("The tennis game should", () => {
         [7, 6, "Mike"],
         [8, 7, "Mike"],
         [9, 8, "Mike"]
-    ])
-        ("show Advantage when both players have different score (%p,%p) and player '%p' has the advantage",
-            (player1wins: number, player2wins: number, advantagePlayer: string) => {
-                scorePlayer1.addPoint = jest.fn();
-                scorePlayer2.addPoint = jest.fn();
-                scorePlayer1.distance = jest.fn(() => player1wins - player2wins);
-                scorePlayer1.getPlayerID = jest.fn(() => "Mike");
-                scorePlayer2.getPlayerID = jest.fn(() => "John");
+    ])("show Advantage when both players have different score (%p,%p) and player '%p' has the advantage",
+        (player1wins: number, player2wins: number, advantagePlayer: string) => {
+            scorePlayer1.addPoint = jest.fn();
+            scorePlayer2.addPoint = jest.fn();
+            scorePlayer1.distance = jest.fn(() => player1wins - player2wins);
+            scorePlayer1.getPlayerID = jest.fn(() => "Mike");
+            scorePlayer2.getPlayerID = jest.fn(() => "John");
 
-                winPoints(player1wins, player2wins);
+            winPoints(player1wins, player2wins);
 
-                expectMessage("Advantage for the player - " + advantagePlayer, player1wins, player2wins);
-            });
+            expectMessage("Advantage for the player - " + advantagePlayer, player1wins, player2wins);
+        });
 
+   /* it.each([
+        [0, 1, "Love", "Fifteen"],
+    ])("show the standard message when both players have different score (%p,%p) and points are less than 3",
+        (player1wins: number, player2wins: number, player1Message: string, player2Message: string) => {
+            const expectedMessage = "Mike - " + player1wins + " - " + player1Message + "\n"
+                                  + "John - " + player1wins + " - " + player1Message;
+            scorePlayer1.addPoint = jest.fn();
+            scorePlayer2.addPoint = jest.fn();
+            scorePlayer1.distance = jest.fn(() => player1wins - player2wins);
+            scorePlayer1.getPlayerID = jest.fn(() => "Mike");
+            scorePlayer2.getPlayerID = jest.fn(() => "John");
 
+            winPoints(player1wins, player2wins);
+
+            expectMessage(expectedMessage, player1wins, player2wins);
+        });
+*/
     function winPoints(scorePlayer1: number, scorePlayer2: number): void {
         for (var i = 0; i < scorePlayer1; i++) {
             game.winAPointPlayer1();
@@ -92,7 +109,8 @@ describe("The tennis game should", () => {
     };
 
     function expectMessage(message: string, numberCallsToAddPointS1: number, numberCallsToAddPointS2: number = numberCallsToAddPointS1) {
-        expect(game.getResultMessage()).toBe(message);
+        var currentMessage = game.getResultMessage();
+        expect(currentMessage.getValue()).toBe(message);
         expect(scorePlayer1.addPoint).toHaveBeenCalledTimes(numberCallsToAddPointS1);
         expect(scorePlayer2.addPoint).toHaveBeenCalledTimes(numberCallsToAddPointS2);
     }
