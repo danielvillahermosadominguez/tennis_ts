@@ -1,4 +1,4 @@
-function hi( nombre: string){
+function hi(nombre: string) {
     console.log("Hello " + nombre);
 }
 
