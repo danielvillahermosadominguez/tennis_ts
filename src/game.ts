@@ -17,11 +17,17 @@ export default class Game {
     }
 
     public getResultMessage():string {
-         if((this.score1.distance(this.score2) == 0) && this.score1.isYourScore(ScoreName.Love)){
-            return "Fifteen-All";
-         } 
-
-         return "Love-All";
+         if(this.score1.distance(this.score2) == 0) {
+            if(this.score1.isYourScore(ScoreName.Love)) {
+                return "Fifteen-All"
+            } else if(this.score1.isYourScore(ScoreName.Thirty)) {
+                return "Thirty-All";
+            } else {
+                return "Deuce";
+            }
+        }
+        
+        return "Love-All";
     }
 }
 

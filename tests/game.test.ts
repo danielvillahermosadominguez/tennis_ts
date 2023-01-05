@@ -8,6 +8,7 @@ describe("The tennis game should", () => {
     var scorePlayer1:Score;
     var scorePlayer2:Score;
     var game:Game;
+
     beforeEach(()=> {
         scorePlayer1 = new Score();
         scorePlayer2 = new Score();
@@ -18,17 +19,51 @@ describe("The tennis game should", () => {
         expect(game.getResultMessage()).toBe("Love-All");
     });
     
-    it("show Fiflteen-All when the player 1 win a point", ()=> {      
+    it("show Fiflteen-All when both players win 1 point", ()=> {      
         scorePlayer1.addPoint = jest.fn();
         scorePlayer2.addPoint = jest.fn();
         scorePlayer1.distance = jest.fn(()=>0);
         scorePlayer1.isYourScore = jest.fn((scoreName)=>  scoreName === ScoreName.Love);
 
-        game.winAPointPlayer1();
-        game.winAPointPlayer2();
+        winPoints(1,1);
 
-        expect(game.getResultMessage()).toBe("Fifteen-All");
-        expect(scorePlayer1.addPoint).toHaveBeenCalled();
-        expect(scorePlayer2.addPoint).toHaveBeenCalled();
+        expectMessage("Fifteen-All",1);
     });
+
+    it("show Thirty-All when both players win 2 points", ()=> {      
+        scorePlayer1.addPoint = jest.fn();
+        scorePlayer2.addPoint = jest.fn();
+        scorePlayer1.distance = jest.fn(()=>0);
+        scorePlayer1.isYourScore = jest.fn((scoreName)=>  scoreName === ScoreName.Thirty);
+
+        winPoints(2,2);
+
+        expectMessage("Thirty-All",2);
+    });
+
+    it("show Deuce when both players win more than 3 points", ()=> {      
+        scorePlayer1.addPoint = jest.fn();
+        scorePlayer2.addPoint = jest.fn();
+        scorePlayer1.distance = jest.fn(()=>0);
+        scorePlayer1.isYourScore = jest.fn((scoreName)=>  scoreName === ScoreName.Deuce);
+
+        winPoints(4,4);
+
+        expectMessage("Deuce",4);
+    });
+
+    function winPoints(scorePlayer1:number, scorePlayer2:number):void {
+        for(var i = 0;i<scorePlayer1;i++) {
+            game.winAPointPlayer1();
+        }
+        for(var i = 0;i<scorePlayer2;i++) {
+            game.winAPointPlayer2();
+        }
+    };
+
+    function expectMessage(message:string, numberCallsToAddPoint:number) {
+        expect(game.getResultMessage()).toBe(message);
+        expect(scorePlayer1.addPoint).toHaveBeenCalledTimes(numberCallsToAddPoint);
+        expect(scorePlayer2.addPoint).toHaveBeenCalledTimes(numberCallsToAddPoint);
+    }
 });
