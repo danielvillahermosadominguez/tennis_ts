@@ -7,31 +7,42 @@ export enum ScoreName {
 
 export class Score {
 
+    private playerID: string;
+    private value: number;
+
     public constructor(playerID: string) {
-        throw new Error("Method not implemented");
+        this.playerID = playerID;
+        this.value = 0;
     }
 
     public addPoint(): void {
-        throw new Error("Method not implemented");
+        this.value++;
     }
 
     public distance(score: Score): number {
-        throw new Error("Method not implemented");
+        return score.getValue() - this.value;
     }
 
     public yourScore(): ScoreName {
-        throw new Error("Method not implemented");
+        var keys = Object.keys(ScoreName);
+        switch (this.value) {
+            case 0: return ScoreName.Love;
+            case 1: return ScoreName.Fifteen;
+            case 2: return ScoreName.Thirty;
+        }
+
+        return ScoreName.Forty;
     }
 
     public getPlayerID(): string {
-        throw new Error("Method not implemented");
+        return this.playerID;
     }
 
     public isOutWinZone(): boolean {
-        throw new Error("Method not implemented");
+        return this.value <= 3;
     }
 
-    public getValue():number {
-        throw new Error("Method not implemented");
+    public getValue(): number {
+        return this.value;
     }
 }
