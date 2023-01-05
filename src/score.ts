@@ -20,7 +20,7 @@ export class Score {
     }
 
     public distance(score: Score): number {
-        return score.getValue() - this.value;
+        return this.value - score.getValue();
     }
 
     public yourScore(): ScoreName {

@@ -365,3 +365,22 @@ To make jest work with Typescript you will need to add configuration to package.
   }
 }
 ```
+## Libraries to play the game
+
+```
+npm install --save-dev ps
+npm install --save-dev util
+npm install --save-dev readline
+```
+
+In addition you will have some problem when you want to build the solution.
+
+You need to include in the webpack.config.js the fs = false.
+ resolve: {
+        extensions: [ '.tsx', '.ts', '.js' ],
+        fallback: {
+            "fs": false
+        }
+    },
+
+NOTA: tsc ./src/index.ts = compila todo ylo deja en el mismo directorio

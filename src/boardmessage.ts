@@ -1,17 +1,19 @@
-import {Score, ScoreName} from "./score";
-
+import { Score, ScoreName } from "./score";
+const Separator:string = " - ";
+const AdvantageForThePlayer = "Advantage for the player - ";
+const IsTheWinner = " is the Winner!!!";
 export class BoardMessage {
-    private value:string;
+    private value: string;
     
     private constructor() {
         this.value = "";
     }
 
-    public static of():BoardMessage {
+    public static of(): BoardMessage {
         return new BoardMessage();
     }
 
-    public all(scoreName:ScoreName) {
+    public all(scoreName: ScoreName) {
         switch (scoreName) {
             case ScoreName.Love:
                 this.value = "Love-All";
@@ -28,20 +30,20 @@ export class BoardMessage {
         }
     }
 
-    public advantageFor(playerId:string) {
-        this.value = "Advantage for the player - " + playerId;
+    public advantageFor(playerId: string) {
+        this.value = AdvantageForThePlayer + playerId;
     }
 
-    public standardMessageFor(score1:Score, score2:Score) {
-        this.value = score1.getPlayerID() +" - " + score1.getValue() + " - " + ScoreName[score1.yourScore()] + "\n"
-                     + score2.getPlayerID() +" - " + score2.getValue()  + " - " + ScoreName[score2.yourScore()] ;
+    public standardMessageFor(score1: Score, score2: Score) {
+        this.value = score1.getPlayerID() + Separator + score1.getValue() + Separator + ScoreName[score1.yourScore()] + "\n"
+            + score2.getPlayerID() + Separator + score2.getValue() + Separator + ScoreName[score2.yourScore()];
     }
 
-    public winnerIs(playerId:string) {
-        this.value = playerId +" is the Winner!!!";
+    public winnerIs(playerId: string) {
+        this.value = playerId + IsTheWinner;
     }
 
-    public getValue():string {
+    public getValue(): string {
         return this.value;
     }
 }

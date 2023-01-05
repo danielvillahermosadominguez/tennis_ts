@@ -31,9 +31,9 @@ describe("Score should", () => {
 
     it.each([
         [0, 0, 0],
-        [0, 1, 1],
-        [1, 0, -1],
-        [10, 3, -7]
+        [0, 1, -1],
+        [1, 0, 1],
+        [10, 3, 7]
     ])("with scores %p and %p return %p",
         (scoreValue1: number, scoreValue2: number, expectedDistance: number) => {
             var score1 = new Score("Mike");

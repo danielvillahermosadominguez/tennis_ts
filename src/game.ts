@@ -1,5 +1,6 @@
 import { Score, ScoreName } from "./score";
 import { BoardMessage } from "./boardmessage";
+const MinimumDistanceToWin = 2;
 export default class Game {
     private score1: Score;
     private score2: Score;
@@ -31,7 +32,7 @@ export default class Game {
             return result;
         } 
         
-        if (!this.existSomeOutOfWinZone()) {
+        if (this.existSomeInTheWinZone()) {
             result.advantageFor(bestScore.getPlayerID());
             return result;
         }
@@ -44,11 +45,11 @@ export default class Game {
 
     private existSomeWinner(): boolean {
         var distance = this.score1.distance(this.score2);
-        return (!this.score1.isOutWinZone() || !this.score2.isOutWinZone()) && (Math.abs(distance) >= 2);
+        return (!this.score1.isOutWinZone() || !this.score2.isOutWinZone()) && (Math.abs(distance) >= MinimumDistanceToWin);
     }
 
-    private existSomeOutOfWinZone(): boolean {
-        return this.score1.isOutWinZone() || this.score2.isOutWinZone();
+    private existSomeInTheWinZone(): boolean {
+        return !this.score1.isOutWinZone() || !this.score2.isOutWinZone();
     }
 
     private equalityOfScores(): boolean {

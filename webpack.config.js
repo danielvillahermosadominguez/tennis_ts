@@ -16,9 +16,15 @@ module.exports = {
     },
     resolve: {
         extensions: [ '.tsx', '.ts', '.js' ],
+        fallback: {
+            "fs": false
+        }
     },
     output: {
         filename: 'bundle.js',
         path: path.resolve(__dirname, 'dist'),
     },
+    experiments: {
+        topLevelAwait: true
+      }
 };

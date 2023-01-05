@@ -2,7 +2,7 @@ import { expect, jest, test } from '@jest/globals';
 import Game from "../src/game";
 import { Score, ScoreName } from "../src/score";
 import { BoardMessage } from "../src/boardmessage";
-
+import { TestUtils } from "./test.utils";
 jest.mock('../src/score');
 
 
@@ -10,47 +10,49 @@ describe("The tennis game should", () => {
     var scorePlayer1: Score;
     var scorePlayer2: Score;
     var game: Game;
+    var tu: TestUtils;
 
     beforeEach(() => {
         scorePlayer1 = new Score("Mike");
         scorePlayer2 = new Score("John");
         game = new Game(scorePlayer1, scorePlayer2);
+        tu = new TestUtils(game, scorePlayer1, scorePlayer2);
     });
 
     it("show Love-All when the match start", () => {
-        configureMock(scorePlayer1,"",NaN,"Love",  0);
-        configureMock(scorePlayer2,"",NaN,"Love",  0);
+        tu.configureMock(scorePlayer1, "", NaN, "Love", 0);
+        tu.configureMock(scorePlayer2, "", NaN, "Love", 0);
 
         expect(game.getResultMessage().getValue()).toBe("Love-All");
     });
 
     it("show Fiflteen-All when both players win 1 point", () => {
-        configureMock(scorePlayer1,"",NaN,"Fifteen",  0);
-        configureMock(scorePlayer2,"",NaN,"Fifteen",  0);
-        configureMock(scorePlayer2);
+        tu.configureMock(scorePlayer1, "", NaN, "Fifteen", 0);
+        tu.configureMock(scorePlayer2, "", NaN, "Fifteen", 0);
+        tu.configureMock(scorePlayer2);
 
 
-        winPoints(1, 1);
+        tu.winPoints(1, 1);
 
-        expectMessage("Fifteen-All", 1);
+        tu.expectMessage("Fifteen-All", 1);
     });
 
     it("show Thirty-All when both players win 2 points", () => {
-        configureMock(scorePlayer1,"",NaN,"Thirty",  0);
-        configureMock(scorePlayer2,"",NaN,"Thirty",  0);
+        tu.configureMock(scorePlayer1, "", NaN, "Thirty", 0);
+        tu.configureMock(scorePlayer2, "", NaN, "Thirty", 0);
 
-        winPoints(2, 2);
+        tu.winPoints(2, 2);
 
-        expectMessage("Thirty-All", 2);
+        tu.expectMessage("Thirty-All", 2);
     });
 
     it("show Deuce when both players win more than 3 points", () => {
-        configureMock(scorePlayer1,"",NaN,"Forty",  0);
-        configureMock(scorePlayer2);
-        
-        winPoints(4, 4);
+        tu.configureMock(scorePlayer1, "", NaN, "Forty", 0);
+        tu.configureMock(scorePlayer2);
 
-        expectMessage("Deuce", 4);
+        tu.winPoints(4, 4);
+
+        tu.expectMessage("Deuce", 4);
     });
 
     it.each([
@@ -68,12 +70,12 @@ describe("The tennis game should", () => {
         [9, 8, "Mike"]
     ])("show Advantage when both players have different score (%p,%p) and player '%p' has the advantage",
         (player1wins: number, player2wins: number, advantagePlayer: string) => {
-            configureMock(scorePlayer1,"Mike",NaN,"",  player1wins - player2wins);
-            configureMock(scorePlayer2,"John");
-           
-            winPoints(player1wins, player2wins);
+            tu.configureMock(scorePlayer1, "Mike", NaN, "", player1wins - player2wins);
+            tu.configureMock(scorePlayer2, "John");
 
-            expectMessage("Advantage for the player - " + advantagePlayer, player1wins, player2wins);
+            tu.winPoints(player1wins, player2wins);
+
+            tu.expectMessage("Advantage for the player - " + advantagePlayer, player1wins, player2wins);
         });
 
     it.each([
@@ -93,12 +95,12 @@ describe("The tennis game should", () => {
         (player1wins: number, player2wins: number, player1Message: string, player2Message: string) => {
             var expectedMessage = `Mike - ${player1wins} - ${player1Message}\nJohn - ${player2wins} - ${player2Message}`;
 
-            configureMock(scorePlayer1,"Mike",player1wins,player1Message,  player1wins - player2wins);
-            configureMock(scorePlayer2,"John",player2wins,player2Message);
-            
-            winPoints(player1wins, player2wins);
+            tu.configureMock(scorePlayer1, "Mike", player1wins, player1Message, player1wins - player2wins);
+            tu.configureMock(scorePlayer2, "John", player2wins, player2Message);
 
-            expectMessage(expectedMessage, player1wins, player2wins);
+            tu.winPoints(player1wins, player2wins);
+
+            tu.expectMessage(expectedMessage, player1wins, player2wins);
         });
 
     it.each([
@@ -122,49 +124,12 @@ describe("The tennis game should", () => {
         (player1wins: number, player2wins: number, winner: string) => {
             const expectedMessage = winner + " is the Winner!!!";
 
-            configureMock(scorePlayer1,"Mike",player1wins,  "", player1wins - player2wins);
-            configureMock(scorePlayer2,"John",player2wins);
+            tu.configureMock(scorePlayer1, "Mike", player1wins, "", player1wins - player2wins);
+            tu.configureMock(scorePlayer2, "John", player2wins);
 
-            winPoints(player1wins, player2wins);
+            tu.winPoints(player1wins, player2wins);
 
-            expectMessage(expectedMessage, player1wins, player2wins);
+            tu.expectMessage(expectedMessage, player1wins, player2wins);
         });
-
-
-    function configureMock(score: Score, playerID: string="", playerWins: number =NaN, playerMessage: string= "", distanceToReturn: number = NaN): void {
-        score.addPoint = jest.fn();
-        if(playerID !="") {
-            score.getPlayerID = jest.fn(() => playerID);
-        }
-
-        if(!isNaN(playerWins)) {
-            score.getValue = jest.fn(() => playerWins);
-            score.isOutWinZone = jest.fn(() => playerWins <= 3);
-        }
-
-        if(playerMessage != "") {
-            score.yourScore = jest.fn(() => ScoreName[playerMessage]);
-        }
-
-        if(!isNaN(distanceToReturn)) {
-            score.distance = jest.fn(() => distanceToReturn);
-        }
-    }
-
-    function winPoints(scorePlayer1: number, scorePlayer2: number): void {
-        for (var i = 0; i < scorePlayer1; i++) {
-            game.winAPointPlayer1();
-        }
-        for (var i = 0; i < scorePlayer2; i++) {
-            game.winAPointPlayer2();
-        }
-    };
-
-    function expectMessage(message: string, numberCallsToAddPointS1: number, numberCallsToAddPointS2: number = numberCallsToAddPointS1) {
-        var currentMessage = game.getResultMessage();
-        expect(currentMessage.getValue()).toBe(message);
-        expect(scorePlayer1.addPoint).toHaveBeenCalledTimes(numberCallsToAddPointS1);
-        expect(scorePlayer2.addPoint).toHaveBeenCalledTimes(numberCallsToAddPointS2);
-    }
 
 });
