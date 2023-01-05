@@ -1,4 +1,4 @@
-import {ScoreName} from "./score";
+import {Score, ScoreName} from "./score";
 
 export class BoardMessage {
     private value:string;
@@ -30,6 +30,11 @@ export class BoardMessage {
 
     public advantageFor(playerId:string) {
         this.value = "Advantage for the player - " + playerId;
+    }
+
+    public standardMessageFor(score1:Score, score2:Score) {
+        this.value = score1.getPlayerID() +" - " + score1.getValue() + " - " + ScoreName[score1.yourScore()] + "\n"
+                     + score2.getPlayerID() +" - " + score2.getValue()  + " - " + ScoreName[score2.yourScore()] ;
     }
 
     public getValue():string {

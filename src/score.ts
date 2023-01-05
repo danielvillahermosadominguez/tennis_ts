@@ -26,4 +26,12 @@ export class Score {
     public getPlayerID(): string {
         throw new Error("Method not implemented");
     }
+
+    public isOutWinZone(): boolean {
+        throw new Error("Method not implemented");
+    }
+
+    public getValue():number {
+        throw new Error("Method not implemented");
+    }
 }

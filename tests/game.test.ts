@@ -1,7 +1,7 @@
 import { expect, jest, test } from '@jest/globals';
 import Game from "../src/game";
 import { Score, ScoreName } from "../src/score";
-import {BoardMessage} from "../src/boardmessage";
+import { BoardMessage } from "../src/boardmessage";
 
 jest.mock('../src/score');
 
@@ -82,23 +82,40 @@ describe("The tennis game should", () => {
             expectMessage("Advantage for the player - " + advantagePlayer, player1wins, player2wins);
         });
 
-   /* it.each([
+    it.each([
         [0, 1, "Love", "Fifteen"],
+        [0, 2, "Love", "Thirty"],
+        [0, 3, "Love", "Forty"],
+        [1, 2, "Fifteen", "Thirty"],
+        [1, 3, "Fifteen", "Forty"],
+        [2, 3, "Thirty", "Forty"],
+        [1, 0, "Fifteen", "Love"],
+        [2, 0, "Thirty", "Love"],
+        [3, 0, "Forty", "Love"],
+        [2, 1, "Thirty", "Fifteen"],
+        [3, 1, "Forty", "Fifteen"],
+        [3, 2, "Forty", "Thirty"]
     ])("show the standard message when both players have different score (%p,%p) and points are less than 3",
         (player1wins: number, player2wins: number, player1Message: string, player2Message: string) => {
             const expectedMessage = "Mike - " + player1wins + " - " + player1Message + "\n"
-                                  + "John - " + player1wins + " - " + player1Message;
+                + "John - " + player2wins + " - " + player2Message;
             scorePlayer1.addPoint = jest.fn();
             scorePlayer2.addPoint = jest.fn();
             scorePlayer1.distance = jest.fn(() => player1wins - player2wins);
+            scorePlayer1.isOutWinZone = jest.fn(() => player1wins < 3);
+            scorePlayer2.isOutWinZone = jest.fn(() => player2wins < 3);
+            scorePlayer1.yourScore = jest.fn(() => ScoreName[player1Message]);
+            scorePlayer2.yourScore = jest.fn(() => ScoreName[player2Message]);
             scorePlayer1.getPlayerID = jest.fn(() => "Mike");
             scorePlayer2.getPlayerID = jest.fn(() => "John");
+            scorePlayer1.getValue = jest.fn(() => player1wins);
+            scorePlayer2.getValue = jest.fn(() => player2wins);
 
             winPoints(player1wins, player2wins);
 
             expectMessage(expectedMessage, player1wins, player2wins);
         });
-*/
+
     function winPoints(scorePlayer1: number, scorePlayer2: number): void {
         for (var i = 0; i < scorePlayer1; i++) {
             game.winAPointPlayer1();

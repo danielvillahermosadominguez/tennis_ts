@@ -20,17 +20,23 @@ export default class Game {
     public getResultMessage(): BoardMessage {
         var result = BoardMessage.of();
         var distance = this.score1.distance(this.score2);
+
+        if(distance == 0) {
+            result.all(this.score1.yourScore());
+            return result;
+        }
+
+        if(this.score1.isOutWinZone() || this.score2.isOutWinZone()) {
+           result.standardMessageFor(this.score1, this.score2);
+           return result;
+        }
+
         if(distance > 0) {
             result.advantageFor(this.score1.getPlayerID());
             return result;
         }
 
-        if(distance < 0) {
-            result.advantageFor(this.score2.getPlayerID());
-            return result;
-        }
-
-        result.all(this.score1.yourScore());
+        result.advantageFor(this.score2.getPlayerID());
         
         return result;
     }
