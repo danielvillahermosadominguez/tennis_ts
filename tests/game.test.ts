@@ -45,7 +45,7 @@ describe("The tennis game should", () => {
         scorePlayer1.addPoint = jest.fn();
         scorePlayer2.addPoint = jest.fn();
         scorePlayer1.distance = jest.fn(()=>0);
-        scorePlayer1.isYourScore = jest.fn((scoreName)=>  scoreName === ScoreName.Deuce);
+        scorePlayer1.isYourScore = jest.fn((scoreName)=>  scoreName === ScoreName.Forty);
 
         winPoints(4,4);
 

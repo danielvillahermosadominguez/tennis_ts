@@ -1,7 +1,7 @@
 export enum ScoreName {
     Love,
     Thirty,
-    Deuce
+    Forty
 }
 
 export class Score {
