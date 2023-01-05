@@ -1,5 +1,5 @@
 import { Score, ScoreName } from "./score";
-import {BoardMessage} from "./boardmessage";
+import { BoardMessage } from "./boardmessage";
 export default class Game {
     private score1: Score;
     private score2: Score;
@@ -19,26 +19,48 @@ export default class Game {
 
     public getResultMessage(): BoardMessage {
         var result = BoardMessage.of();
-        var distance = this.score1.distance(this.score2);
+        var bestScore = this.getAdvantagedPlayer();
 
-        if(distance == 0) {
-            result.all(this.score1.yourScore());
+        if (this.equalityOfScores()) {
+            result.all(bestScore.yourScore());
             return result;
-        }
-
-        if(this.score1.isOutWinZone() || this.score2.isOutWinZone()) {
-           result.standardMessageFor(this.score1, this.score2);
-           return result;
-        }
-
-        if(distance > 0) {
-            result.advantageFor(this.score1.getPlayerID());
-            return result;
-        }
-
-        result.advantageFor(this.score2.getPlayerID());
+        } 
         
+        if(this.existSomeWinner()) {
+            result.winnerIs(bestScore.getPlayerID());
+            return result;
+        } 
+        
+        if (!this.existSomeOutOfWinZone()) {
+            result.advantageFor(bestScore.getPlayerID());
+            return result;
+        }
+
+        result.standardMessageFor(this.score1, this.score2);
+
         return result;
+    }
+
+
+    private existSomeWinner(): boolean {
+        var distance = this.score1.distance(this.score2);
+        return (!this.score1.isOutWinZone() || !this.score2.isOutWinZone()) && (Math.abs(distance) >= 2);
+    }
+
+    private existSomeOutOfWinZone(): boolean {
+        return this.score1.isOutWinZone() || this.score2.isOutWinZone();
+    }
+
+    private equalityOfScores(): boolean {
+        var distance = this.score1.distance(this.score2);
+        return distance == 0;
+    }
+    private getAdvantagedPlayer():Score {
+        var distance = this.score1.distance(this.score2);
+        if(distance > 0) {
+            return this.score1;
+        } 
+        return this.score2;
     }
 }
 

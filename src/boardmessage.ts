@@ -37,6 +37,10 @@ export class BoardMessage {
                      + score2.getPlayerID() +" - " + score2.getValue()  + " - " + ScoreName[score2.yourScore()] ;
     }
 
+    public winnerIs(playerId:string) {
+        this.value = playerId +" is the Winner!!!";
+    }
+
     public getValue():string {
         return this.value;
     }

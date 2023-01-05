@@ -18,16 +18,17 @@ describe("The tennis game should", () => {
     });
 
     it("show Love-All when the match start", () => {
-        scorePlayer1.distance = jest.fn(() => 0);
-        scorePlayer1.yourScore = jest.fn(() => ScoreName.Love);
+        configureMock(scorePlayer1,"",NaN,"Love",  0);
+        configureMock(scorePlayer2,"",NaN,"Love",  0);
+
         expect(game.getResultMessage().getValue()).toBe("Love-All");
     });
 
     it("show Fiflteen-All when both players win 1 point", () => {
-        scorePlayer1.addPoint = jest.fn();
-        scorePlayer2.addPoint = jest.fn();
-        scorePlayer1.distance = jest.fn(() => 0);
-        scorePlayer1.yourScore = jest.fn(() => ScoreName.Fifteen);
+        configureMock(scorePlayer1,"",NaN,"Fifteen",  0);
+        configureMock(scorePlayer2,"",NaN,"Fifteen",  0);
+        configureMock(scorePlayer2);
+
 
         winPoints(1, 1);
 
@@ -35,10 +36,8 @@ describe("The tennis game should", () => {
     });
 
     it("show Thirty-All when both players win 2 points", () => {
-        scorePlayer1.addPoint = jest.fn();
-        scorePlayer2.addPoint = jest.fn();
-        scorePlayer1.distance = jest.fn(() => 0);
-        scorePlayer1.yourScore = jest.fn(() => ScoreName.Thirty);
+        configureMock(scorePlayer1,"",NaN,"Thirty",  0);
+        configureMock(scorePlayer2,"",NaN,"Thirty",  0);
 
         winPoints(2, 2);
 
@@ -46,11 +45,9 @@ describe("The tennis game should", () => {
     });
 
     it("show Deuce when both players win more than 3 points", () => {
-        scorePlayer1.addPoint = jest.fn();
-        scorePlayer2.addPoint = jest.fn();
-        scorePlayer1.distance = jest.fn(() => 0);
-        scorePlayer1.yourScore = jest.fn(() => ScoreName.Forty);
-
+        configureMock(scorePlayer1,"",NaN,"Forty",  0);
+        configureMock(scorePlayer2);
+        
         winPoints(4, 4);
 
         expectMessage("Deuce", 4);
@@ -71,12 +68,9 @@ describe("The tennis game should", () => {
         [9, 8, "Mike"]
     ])("show Advantage when both players have different score (%p,%p) and player '%p' has the advantage",
         (player1wins: number, player2wins: number, advantagePlayer: string) => {
-            scorePlayer1.addPoint = jest.fn();
-            scorePlayer2.addPoint = jest.fn();
-            scorePlayer1.distance = jest.fn(() => player1wins - player2wins);
-            scorePlayer1.getPlayerID = jest.fn(() => "Mike");
-            scorePlayer2.getPlayerID = jest.fn(() => "John");
-
+            configureMock(scorePlayer1,"Mike",NaN,"",  player1wins - player2wins);
+            configureMock(scorePlayer2,"John");
+           
             winPoints(player1wins, player2wins);
 
             expectMessage("Advantage for the player - " + advantagePlayer, player1wins, player2wins);
@@ -94,27 +88,68 @@ describe("The tennis game should", () => {
         [3, 0, "Forty", "Love"],
         [2, 1, "Thirty", "Fifteen"],
         [3, 1, "Forty", "Fifteen"],
-        [3, 2, "Forty", "Thirty"]
+        [3, 2, "Forty", "Thirty"],
     ])("show the standard message when both players have different score (%p,%p) and points are less than 3",
         (player1wins: number, player2wins: number, player1Message: string, player2Message: string) => {
-            const expectedMessage = "Mike - " + player1wins + " - " + player1Message + "\n"
-                + "John - " + player2wins + " - " + player2Message;
-            scorePlayer1.addPoint = jest.fn();
-            scorePlayer2.addPoint = jest.fn();
-            scorePlayer1.distance = jest.fn(() => player1wins - player2wins);
-            scorePlayer1.isOutWinZone = jest.fn(() => player1wins < 3);
-            scorePlayer2.isOutWinZone = jest.fn(() => player2wins < 3);
-            scorePlayer1.yourScore = jest.fn(() => ScoreName[player1Message]);
-            scorePlayer2.yourScore = jest.fn(() => ScoreName[player2Message]);
-            scorePlayer1.getPlayerID = jest.fn(() => "Mike");
-            scorePlayer2.getPlayerID = jest.fn(() => "John");
-            scorePlayer1.getValue = jest.fn(() => player1wins);
-            scorePlayer2.getValue = jest.fn(() => player2wins);
+            var expectedMessage = `Mike - ${player1wins} - ${player1Message}\nJohn - ${player2wins} - ${player2Message}`;
+
+            configureMock(scorePlayer1,"Mike",player1wins,player1Message,  player1wins - player2wins);
+            configureMock(scorePlayer2,"John",player2wins,player2Message);
+            
+            winPoints(player1wins, player2wins);
+
+            expectMessage(expectedMessage, player1wins, player2wins);
+        });
+
+    it.each([
+        [0, 4, "John"],
+        [1, 4, "John"],
+        [2, 4, "John"],
+        [3, 5, "John"],
+        [4, 6, "John"],
+        [5, 7, "John"],
+        [6, 8, "John"],
+        [7, 9, "John"],
+        [4, 0, "Mike"],
+        [4, 1, "Mike"],
+        [4, 2, "Mike"],
+        [5, 3, "Mike"],
+        [6, 4, "Mike"],
+        [7, 5, "Mike"],
+        [8, 6, "Mike"],
+        [9, 7, "Mike"]
+    ])("show the winner message when the score (%p,%p) of is higher than 3 and the distance between them are >2",
+        (player1wins: number, player2wins: number, winner: string) => {
+            const expectedMessage = winner + " is the Winner!!!";
+
+            configureMock(scorePlayer1,"Mike",player1wins,  "", player1wins - player2wins);
+            configureMock(scorePlayer2,"John",player2wins);
 
             winPoints(player1wins, player2wins);
 
             expectMessage(expectedMessage, player1wins, player2wins);
         });
+
+
+    function configureMock(score: Score, playerID: string="", playerWins: number =NaN, playerMessage: string= "", distanceToReturn: number = NaN): void {
+        score.addPoint = jest.fn();
+        if(playerID !="") {
+            score.getPlayerID = jest.fn(() => playerID);
+        }
+
+        if(!isNaN(playerWins)) {
+            score.getValue = jest.fn(() => playerWins);
+            score.isOutWinZone = jest.fn(() => playerWins <= 3);
+        }
+
+        if(playerMessage != "") {
+            score.yourScore = jest.fn(() => ScoreName[playerMessage]);
+        }
+
+        if(!isNaN(distanceToReturn)) {
+            score.distance = jest.fn(() => distanceToReturn);
+        }
+    }
 
     function winPoints(scorePlayer1: number, scorePlayer2: number): void {
         for (var i = 0; i < scorePlayer1; i++) {
